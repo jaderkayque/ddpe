@@ -1,0 +1,110 @@
+{% extends "base.html" %} {% block title %}DDPE - MMGD - Dashboard{% endblock %}
+
+{% block content%}
+
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Minigeração - Dashboard</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'app:index' %}">Home</a></li>
+          <li class="breadcrumb-item">Minigeração</li>
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Orçamentos estimados </h5>
+              <p>Lista com todos os orçamentos estimados registrados.</p>
+
+              <!-- Table with stripped rows -->
+              <table class="table datatable">
+                <thead>
+                  <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Usina</th>
+                    <th scope="col">empresa</th>
+                    <th scope="col">Potência</th>
+                    <th scope="col">Custo</th>
+                    <th scope="col">Observação</th>
+                    <th scope="col">Ações</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+
+                {%for i in orcs %}
+                  <tr>
+                    <th scope="row">{{i.id}}</th>
+                    <td>{{i.data}}</td>
+                    <td>{{i.usina}}</td>
+                    <td>{{i.empresa}}</td>
+                    <td>{{i.potencia}}</td>
+                    <td>R$ {{i.obra_valor1}}</td>
+                    <td>{{i.observacao}}</td>
+                    <td>
+                        <button type='button'  class='btn btn-light' id='bt_vis_{{i.id}}' onclick="visualizar({{i.id}})">
+
+                              <div data-toggle="tooltip" data-bs-placement="top" title="Visualizar"><i class='bi bi-eye'></i></div>
+
+                        </button>
+                        <button type='button' class='btn btn-light' id='bt_down_{{i.id}}' data-bs-toggle="tooltip" data-bs-placement="top" title="Download do Orçamento Estimado" onclick="download({{i.id}})">
+                          <div data-toggle="tooltip" data-bs-placement="top" title="Download"><i class='bi bi-download'></i></div>
+                        </button>
+
+                  </button>
+
+
+                    </td>
+                  </tr>
+                {%endfor%}
+                
+                </tbody>
+              </table>
+              <!-- End Table with stripped rows -->
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+  </main><!-- End #main -->S
+
+  <script type="text/javascript">
+    function visualizar(id){
+      window.location = "estimado?id=" + id;
+      console.log("linha: " + id)
+    }
+
+    function download(id){
+      console.log("download linha: " + id)
+      var doc = new jsPDF();
+
+      doc.text(20, 20, 'Hello world!');
+      doc.text(20, 30, 'This is client-side Javascript to generate a PDF.');
+
+      // Add new page
+      doc.addPage();
+      doc.text(20, 20, 'Visit CodexWorld.com');
+
+      // Save the PDF
+      doc.save('document.pdf');
+    }
+
+
+
+  </script>
+  
+{% endblock %}

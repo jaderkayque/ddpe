@@ -1,0 +1,60 @@
+{% extends "base.html" %} {% block title %}Login{% endblock %}
+
+{% block content %}
+
+<main id="main" class="main">
+    {% if form.errors %}
+        <p>Usuário ou senha inválidos, tente novamente.</p>
+      {% endif %}
+
+      {% if next %}
+        {% if user.is_authenticated %}
+          <p>A sua conta não tem acesso a esta página. Para continuar
+          logue com uma conta que tem acesso.</p>
+        {% else %}
+          <p>Por gentileza, logue-se para ver esta página.</p>
+        {% endif %}
+      {% endif %}
+
+    <section class="section">
+          <div class="row">
+            <div class="col-lg">
+
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Login</h5>
+                  <form method="POST" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <label for="username">Usuário</label>
+                      <input
+                        class="form-control"
+                        id="username"
+                        name="username"
+                        placeholder="Digite o usuário"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="password">Senha</label>
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="password"
+                        name="password"
+                        placeholder="Digite a senha"
+                      />
+                    </div>
+                    <br />
+                    <button type="submit" class="btn btn-primary" value="login">Login</button>
+                    <input type="hidden" name="next" value="{{ next }}">
+                  </form>
+
+                  <p><a href="{% url 'password_reset' %}">Esqueceu a senha?</a></p>
+                </div>
+              </div>
+            </div>
+          </div>
+    </section>
+</main>
+
+{% endblock %}

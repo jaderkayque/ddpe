@@ -1,0 +1,193 @@
+{% extends "base.html" %} {% block title %}DDPE - Orçamento Estimado{% endblock %}
+
+{% block content%}
+
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Orçamento Estimado</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'app:index' %}">Home</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'mmgd:index' %}">Minigeração</a></li>
+          <li class="breadcrumb-item active">Orçamento Estimado</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+
+        <div class="col-lg-3">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Digite as informações da minigeração</h5>
+
+              <form class="row g-3 needs-validation" id="mmgd_consulta" method="POST" name="mmgd_consulta" novalidate>
+                <div class="col-12">
+                  <label for="nome_usina" class="form-label">Nome da usina</label>
+                  <input type="text" class="form-control" placeholder="UFV Exemplo"
+                         name="nome_usina" id="nome_usina" required>
+                </div>
+                <div class="col-12">
+                  <label for="latitude" class="form-label">Latitude</label>
+                  <input type="text" class="form-control"
+                         onkeypress="return onlyNumberKey(event)"
+                         maxlength="11"
+                         placeholder="-23.2273" name="latitude" id="latitude" required>
+                </div>
+                <div class="col-12">
+                  <label for="longitude" class="form-label">Longitude</label>
+                  <input type="text" class="form-control"
+                         onkeypress="return onlyNumberKey(event)"
+                         maxlength="11"
+                         placeholder="-45.9109" name="longitude" id="longitude" required>
+                </div>
+                <div class="col-12">
+                  <label for="potencia_geracao" class="form-label">Potência de Geração (kW)</label>
+                  <input type="number" class="form-control"
+                         max="2500"
+                         placeholder="1000" name="potencia_geracao" id="potencia_geracao" required>
+                  <div class="invalid-feedback">A injeção máxima na média tensão é de 2500 kWp.</div>
+                </div>
+
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary" id="btn_consultar" name="btn_consultar" onclick="updateName()" onsubmit="showCard()" >
+                    <span class = "spinner-border spinner-border-sm" role="status" id="load_consulta" style="display:none"></span>
+                    Consultar
+                  </button>
+                  <button type="reset" class="btn btn-secondary">Apagar</button>
+                </div>
+              </form><!-- Vertical Form -->
+
+            </div>
+          </div>
+
+        </div>
+
+        <div class="col-lg-9">
+
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-11">
+                  <h5 class="card-title">Gerar Orçamento estimado</h5>
+                </div>
+                <div class="col-1">
+                  <button type="button" class="btn btn-outline-dark"
+                          data-bs-toggle="tooltip" data-bs-placement="bottom"
+                          title="Dê um clique para marcar e dois cliques no Pin para desmarcá-lo."
+                          style="margin: 10px">
+                    <i class="bi bi-info-circle"></i>
+                  </button>
+                </div>
+
+              </div>
+              <h6>Preencha o formulário ao lado para carregarmos informações sobre o local de instalação.</h6>
+              <h6>Utilize o mapa abaixo para obter a latitude e longitude caso precise.</h6>
+              <iframe class="map" src="{% url 'mmgd:map' %}" width="100%" height="400"></iframe>
+
+            </div>
+          </div>
+
+          {% if alm is none %}
+          {% else %}
+          <div class="card" id="card_info" >
+            <div class="card-body">
+              <h5 class="card-title">Descrição Técnica</h5>
+
+              <!-- Default Tabs -->
+              <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="alt1-tab" data-bs-toggle="tab" data-bs-target="#alt1" type="button" role="tab" aria-controls="alt1" aria-selected="true">Opção 1</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="alt2-tab" data-bs-toggle="tab" data-bs-target="#alt2" type="button" role="tab" aria-controls="alt2" aria-selected="false">Alternativa 2</button>
+                </li>
+              </ul>
+              <div class="tab-content pt-2" id="myTabContent">
+                <div class="tab-pane fade show active" id="alt1" role="tabpanel" aria-labelledby="alt1-tab">
+                  <p>Nome da Usina: {{alm.NOME_USINA}}</p>
+                  <p>Subestação: {{alm.ETD}}</p>
+                  <p>Alimentador: {{alm.ALM}}</p>
+                  <p>Tensão de Operação: {{alm.TENSAO}}</p>
+                  <p>Descrição modular da obra: {{alm.DESC_OBRA_1}}</p>
+                  <p>Custo estimado modular: R$ {{alm.VALOR_1}}</p>
+                </div>
+                <div class="tab-pane fade" id="alt2" role="tabpanel" aria-labelledby="alt2-tab">
+                  <p>Nome da Usina: {{alm.NOME_USINA}}</p>
+                  <p>Subestação: {{etd2}}</p>
+                  <p>Alimentador: {{alm2}}</p>
+                  <p>Tensão de fornecimento: {{vnom2}}</p>
+                  <p>Descrição modular da obra: {{desc2}}</p>
+                  <p>Custo estimado modular: R$ {{custo2}}</p>
+                </div>
+              </div><!-- End Default Tabs -->
+            </div>
+
+          </div>
+          {%endif %}
+
+        </div>
+      </div>
+    </section>
+
+  </main><!-- End #main -->
+  <script>
+      function onlyNumberKey(evt) {
+
+          // Only ASCII character in that range allowed
+          var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+          if (ASCIICode >= 45 || ASCIICode <= 46)
+              return true;
+          if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+              return false;
+          return true;
+      }
+
+      function showCard(){
+        var x = document.getElementById("card_info");
+        x.style.display = "block";
+
+      }
+  </script>
+  <script>
+      function updateName(){
+        console.log('teste')
+        if (validateForm()) {
+          var btn = document.getElementById("btn_consultar");
+          btn.innerHTML = '<span class = "spinner-border spinner-border-sm" role="status" id="load_consulta" style="display:none"></span> ';
+          var x = document.getElementById("load_consulta");
+          x.style.display = 'block';
+
+          return false;
+        }
+        return false;
+      }
+  </script>
+  <script>
+  function validateForm() {
+    var nome_usina = document.forms["mmgd_consulta"]["nome_usina"].value;
+    var latitude = document.forms["mmgd_consulta"]["latitude"].value;
+    var longitude = document.forms["mmgd_consulta"]["longitude"].value;
+    var potencia_geracao = document.forms["mmgd_consulta"]["potencia_geracao"].value;
+
+    if (nome_usina.length == 0) {
+      return false;}
+
+    if (latitude.length == 0) {
+      return false;}
+
+    if (longitude.length == 0) {
+      return false;}
+
+    if (potencia_geracao.length == 0) {
+      return false;}
+
+    return true;
+
+}
+
+</script>
+{% endblock %}
